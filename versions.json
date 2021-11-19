@@ -1,6 +1,6 @@
 [
   {
-    "checkoutTarget": "v8.0.0",
+    "checkoutTarget": "774803db",
     "name": "8.0.0",
     "path": "/nebular/",
     "isCurrent": true

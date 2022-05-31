@@ -54,9 +54,6 @@ export interface Version {
   log(`Adding versions.json to ${OUT_DIR}`);
   await outputFile(join(OUT_DIR, 'versions.json'), jsonConfig);
 
-  log(`Deploying to ghpages`);
-  await deploy(OUT_DIR);
-
   log(`Cleaning up working directory (${WORK_DIR})`);
   await remove(WORK_DIR);
 })();
@@ -186,11 +183,4 @@ async function buildDocsApp(projectDir: string, baseHref: string) {
   await runCommand('npm run docs:prepare', { cwd: projectDir });
   await runCommand(`npm run build -- docs --configuration production --base-href '${baseHref}'`, { cwd: projectDir });
   await runCommand('npm run docs:dirs', { cwd: projectDir });
-}
-
-async function deploy(distDir: string) {
-  await runCommand(
-    `npx angular-cli-ghpages --dir . --repo=https://GH_TOKEN@github.com/${REPO_OWNER}/${REPO_NAME}.git`,
-    { cwd: distDir, showLog: true },
-  );
 }

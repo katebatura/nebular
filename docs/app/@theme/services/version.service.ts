@@ -26,8 +26,9 @@ export class NgdVersionService {
         catchError(() => of([])),
         shareReplay(1),
       );
+    } else {
+      this.supportedVersions$ = of([this.devVersion]).pipe(shareReplay(1));
     }
-    this.supportedVersions$ = of([this.devVersion]).pipe(shareReplay(1));
   }
 
   getCurrentVersion(): Observable<Version> {
@@ -41,5 +42,9 @@ export class NgdVersionService {
 
   getSupportedVersions(): Observable<Version[]> {
     return this.supportedVersions$;
+  }
+
+  a() {
+    return environment.production;
   }
 }

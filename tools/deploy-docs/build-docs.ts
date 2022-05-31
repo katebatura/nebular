@@ -6,7 +6,7 @@ import { generateGithubSpaScript } from './ghspa-template';
 import { runCommand } from './run-command';
 import { log } from './log';
 
-import { REPO_URL, OUT_DIR } from './config';
+import { REPO_URL, OUT_DIR, REPO_OWNER, REPO_NAME } from './config';
 import { getStdout } from './get-stdout';
 
 const WORK_DIR = join(process.cwd(), '../_DOCS_BUILD_WORK_DIR_');
@@ -38,7 +38,7 @@ export interface Version {
   await copyToBuildDir(MASTER_BRANCH_DIR, GH_PAGES_DIR);
   await checkoutVersion('gh-pages', GH_PAGES_DIR);
   const builtVersions: { hash; path }[] = await checkBuiltVersions();
-  log(`Built versions in gh-pages: ${JSON.stringify(builtVersions)}`);
+  log(`Built versions in gh-pages: ${builtVersions}`);
 
   log('Reading versions configuration');
   const config: Version[] = await import(DOCS_VERSIONS_PATH);
@@ -113,7 +113,7 @@ async function prepareVersion(version: Version, distDir: string, ghspaScript: st
   await copyToBuildDir(MASTER_BRANCH_DIR, projectDir);
   await checkoutVersion(version.checkoutTarget, projectDir);
 
-  const currentHash = await getStdout('git rev-parse HEAD', { cwd: projectDir, showLog: true });
+  const currentHash = getStdout('git rev-parse HEAD', { cwd: projectDir, showLog: true });
 
   const existInGhPages = builtVersions.find((item) => currentHash === item.hash);
 
@@ -122,8 +122,7 @@ async function prepareVersion(version: Version, distDir: string, ghspaScript: st
   } else {
     await runCommand('npm ci', { cwd: projectDir });
     await addVersionNameToPackageJson(version.name, join(projectDir, 'package.json'));
-    await addVersionTs(version, join(projectDir, 'docs', 'version.ts'));
-    //await addVersionTs(version, join(projectDir, 'version.ts'));
+    await addVersionTs(version, join(projectDir, 'version.ts'));
     await buildDocsApp(projectDir, version.path);
     await addCommitHash(join(OUT_DIR, FILE_WITH_HASH), projectDir);
     await copy(join(projectDir, OUT_DIR), distDir);
